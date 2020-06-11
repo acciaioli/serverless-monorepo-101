@@ -1,6 +1,8 @@
 on: push
 name: CI
+
 jobs:
+
 ###  BACKEND TESTS  ###
   test-backend:
     defaults:
@@ -28,6 +30,8 @@ jobs:
           node-version: '12'
       - run: npm install
       - run: npm run lint
+
+###  BACKEND BUILDS  ###
   build-backend:
     needs: [test-backend, test-frontend]
     if: github.ref == 'refs/heads/master'
