@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 Buckets that helps managing deployments
+
+Parameters:
+  Env:
+    Description: environment
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+  BucketName:
+    Description: name of the bucket
+    Type: String
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: !Ref BucketName
+      Tags:
+        - Key: "Env"
+          Value: !Ref Env
+    DeletionPolicy: Retain
