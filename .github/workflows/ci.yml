@@ -19,6 +19,7 @@ jobs:
     defaults:
       run:
         working-directory: frontend
+    runs-on: ubuntu-latest
     steps:
       - name: LS
         run: ls -la .
