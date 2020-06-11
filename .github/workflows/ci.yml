@@ -12,6 +12,7 @@ jobs:
         with:
           go-version: 1.14.x
       - uses: actions/checkout@v2
+      # service tests
       - run: make -s -C demo-service
 
 ###  FRONTEND TESTS  ###
@@ -27,28 +28,16 @@ jobs:
           node-version: '12'
       - run: npm install
       - run: npm run lint
-  build:
+  build-backend:
     needs: [test-backend, test-frontend]
     if: github.ref == 'refs/heads/master'
+    defaults:
+      run:
+        working-directory: backend
     runs-on: ubuntu-latest
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v1
         with:
           go-version: 1.14.x
-      - name: Checkout code
-        uses: actions/checkout@v2
-#      - name: Build Binary
-#        run: make build
-#      - name: Install Python3
-#        uses: actions/setup-python@v1
-#      - name: Install AWS SAM CLI
-#        run: pip install aws-sam-cli
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: eu-west-1
-#      - name: Deploy AWS Lambda
-#        run: make deploy
+      - uses: actions/checkout@v2
+      - run: echo "run schedule-deployments.sh"
