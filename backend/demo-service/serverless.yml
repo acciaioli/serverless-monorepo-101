@@ -21,27 +21,22 @@ provider:
   timeout: 6
   logRetentionInDays: 1
   disableLogs: false
-  deploymentBucket:
-    maxPreviousDeploymentArtifacts: 5
-    blockPublicAccess: true
-  deploymentPrefix: ${self:service.name}--${self:provider.stage}
+#  deploymentBucket:
+#    maxPreviousDeploymentArtifacts: 5
+#    blockPublicAccess: true
+#  deploymentPrefix: ${self:service.name}--${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
       Resource: "*"
-#  role: arn:aws:iam::XXXXXX:role/role # Overwrite the default IAM role which is used for all functions
-#  rolePermissionsBoundary: arn:aws:iam::XXXXXX:policy/policy # ARN of an Permissions Boundary for the role.
-#  cfnRole: arn:aws:iam::XXXXXX:role/role # ARN of an IAM role for CloudFormation service. If specified, CloudFormation uses the role's credentials
-#
+
 
 package:
   exclude:
     - ./**
   include:
     - ./.bin/**
-#  artifact: https://s3.eu-west-1.amazonaws.com/servelerss-monorepo-101-serverlessdeploymentbuck-1zpvkppqyedp/ola/ehehe.zip
-#  artifact: https://servelerss-monorepo-101-serverlessdeploymentbuck-1zpvkppqyedp.s3-eu-west-1.amazonaws.com/ola/ehehe.zip
 
 functions:
   echo:
