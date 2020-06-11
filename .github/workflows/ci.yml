@@ -16,11 +16,13 @@ jobs:
       - name: LS
         run: ls -la .
   test-frontend:
-#    defaults:
-#      run:
-#        working-directory: frontend
+    defaults:
+      run:
+        working-directory: frontend
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
       - name: LS
         run: ls -la .
   build:
