@@ -1,0 +1,12 @@
+name: CD
+
+on: repository_dispatch
+
+jobs:
+
+###  BACKEND TESTS  ###
+  demo-service:
+    if: github.event.client_payload.service == 'demo-service'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "deploy demo-service"
