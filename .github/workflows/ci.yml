@@ -1,25 +1,29 @@
 on: push
 name: CI
 jobs:
-  test:
-    strategy:
-      matrix:
-        go-version: [1.14.x]
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+  test-backend:
+    defaults:
+      run:
+        working-directory: backend
+    runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v1
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: 1.14.x
       - name: Checkout code
         uses: actions/checkout@v1
-      - name: CD
-        run: cd backend
+      - name: LS
+        run: ls -la .
+  test-frontend:
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
       - name: LS
         run: ls -la .
   build:
-    needs: test
+    needs: [test-backed, test-frontend]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
