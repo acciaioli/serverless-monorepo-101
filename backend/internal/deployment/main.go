@@ -47,7 +47,7 @@ func dirHashCheckSum(root string) (string, error) {
 			return nil
 		}
 
-		log.Print(fmt.Sprintf("adding '%s' to the hash", fPath))
+		//log.Print(fmt.Sprintf("adding '%s' to the hash", fPath))
 		fReader, err := os.Open(fPath)
 		if err != nil {
 			return err
@@ -151,15 +151,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Print(fmt.Sprintf("service hash checksum: <%s>", hashSum))
+	log.Print(fmt.Sprintf("service hash checksum: '%s'", hashSum))
 
 	latestHasSum, err := latestdirHashCheckSum(env.DeploymentBucket, env.Service)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(fmt.Sprintf("latest service hash checksum: <%s>", latestHasSum))
-	err = scheduleServiceDeployment(env.Service, env.GithubRepo, env.GithubToken)
-	if err != nil {
-		log.Fatal(err)
+	log.Print(fmt.Sprintf("latest service hash checksum: '%s'", latestHasSum))
+
+	if hashSum != latestHasSum {
+		log.Print("service was updated - scheduling deployment...")
+		err = scheduleServiceDeployment(env.Service, env.GithubRepo, env.GithubToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Print("success!")
+	} else {
+		log.Print("service was not updated")
 	}
+
+	log.Print("done")
 }
