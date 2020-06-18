@@ -1,11 +1,10 @@
-name: Continuous Integration
+name: Backend Continuous Integration
 
 on: push
 
 jobs:
 
-###  BACKEND TESTS  ###
-  test-backend:
+  test:
     defaults:
       run:
         working-directory: backend
@@ -18,22 +17,7 @@ jobs:
       # add new services bellow
       - run: make test -s -C demo-service
 
-###  FRONTEND TESTS  ###
-  test-frontend:
-    defaults:
-      run:
-        working-directory: frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-      - run: npm install
-      - run: npm run lint
-
-###  BACKEND BUILDS  ###
-  build-backend:
+  build:
     needs: test-backend
     if: github.ref == 'refs/heads/master'
     defaults:
