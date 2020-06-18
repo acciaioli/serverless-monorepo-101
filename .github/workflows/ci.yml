@@ -15,7 +15,7 @@ jobs:
         with:
           go-version: 1.14.x
       - uses: actions/checkout@v2
-      # service tests
+      # add new services bellow
       - run: make test -s -C demo-service
       - run: make compile -s -C demo-service
 
@@ -46,4 +46,8 @@ jobs:
         with:
           go-version: 1.14.x
       - uses: actions/checkout@v2
-      - run: echo "go run internal/deployment/main.go"
+      - run: go build
+      # add new services bellow
+      - run: make test -s -C demo-service
+      - run: make compile -s -C demo-service
+

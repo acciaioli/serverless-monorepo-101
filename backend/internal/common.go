@@ -1,13 +1,12 @@
 package internal
 
 import (
-	"archive/zip"
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,28 +15,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
-	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 )
-
-type Secrets struct {
-	// The bucket use to store deployment related state.
-	DeploymentBucket string `envconfig:"DEPLOYMENT_AWS_S3_BUCKET" required:"true"`
-	// The region for everything deployment related
-	DeploymentRegion string `envconfig:"DEPLOYMENT_AWS_REGION" default:"eu-west-1"`
-	// Github Personal Access Token
-	// (https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
-	PersonalAccessToken string `envconfig:"PERSONAL_ACCESS_TOKEN" required:"true"`
-}
-
-func LoadSecrets() (*Secrets, error) {
-	env := Secrets{}
-	err := envconfig.Process("", &env)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to load secrets")
-	}
-	return &env, nil
-}
 
 const (
 	binariesDir         = ".bin"
@@ -174,45 +153,14 @@ func (bu *BuildUtils) GenerateDistZip() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(fPaths) < 1 {
+		return nil, errors.New("no binaries files found")
+	}
 	fPaths = append(fPaths, filepath.Join(bu.service, serverlessYML))
 
-	buf := new(bytes.Buffer)
-	zipWriter := zip.NewWriter(buf)
-
-	for _, fPath := range fPaths {
-		if err := func() error {
-			r, err := os.Open(fPath)
-			if err != nil {
-				return err
-			}
-			defer r.Close()
-
-			zPath, err := filepath.Rel(bu.service, fPath)
-			if err != nil {
-				return err
-			}
-			w, err := zipWriter.Create(zPath)
-			if err != nil {
-				return err
-			}
-
-			_, err = io.Copy(w, r)
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}(); err != nil {
-			return nil, err
-		}
-	}
-
-	err = zipWriter.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
+	return zipFiles(fPaths, func(fPath string) (string, error) {
+		return filepath.Rel(bu.service, fPath)
+	})
 }
 
 func (bu *BuildUtils) UploadDistZip(checksum string, zipData []byte) error {
@@ -236,4 +184,23 @@ func (bu *BuildUtils) DownloadDistZip(checksum string) (string, error) {
 	}
 
 	return distZip, nil
+}
+
+func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
+	distPath := "dist"
+	err := unzipFiles(distZipPath, distPath)
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("serverless", "deploy", "--stage", env)
+	cmd.Dir = distPath
+	out := bytes.Buffer{}
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+	fmt.Println(out.String())
+	return nil
 }

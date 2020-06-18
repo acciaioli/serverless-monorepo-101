@@ -21,4 +21,5 @@ jobs:
       ENV: github.event.client_payload.env
       SERVICE: github.event.client_payload.service
     steps:
+      - run: curl -o- -L https://slss.io/install | bash
       - run: echo "deploy demo-service"

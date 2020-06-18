@@ -1,22 +1,12 @@
 package main
 
 import (
-	"crypto/sha1"
+	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 
 	"github.com/pkg/errors"
-
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/aws/aws-sdk-go/aws"
-	aws_session "github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
 	"backend/internal"
 )
@@ -24,14 +14,20 @@ import (
 const binariesDir = ".bin"
 
 type Variables struct {
+	Env     string
 	Service string
-	*internal.Secrets
 	*internal.GitHubEnv
+	*internal.GitHubSecrets
 }
 
 func loadVariables() (*Variables, error) {
+	env := flag.String("env", "", "environment")
 	service := flag.String("service", "", "service id")
 	flag.Parse()
+
+	if *env == "" {
+		return nil, errors.New("`--env` not provided")
+	}
 
 	if *service == "" {
 		return nil, errors.New("`--service` not provided")
@@ -47,79 +43,7 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{Service: *service, Secrets: secrets, GitHubEnv: githubEnv}, nil
-}
-
-func dirHashCheckSum(root string) (string, error) {
-	hash := sha1.New()
-
-	if err := filepath.Walk(root, func(fPath string, fInfo os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if fInfo.IsDir() {
-			return nil
-		}
-
-		isBin, err := filepath.Match(filepath.Join(root, binariesDir, "*"), fPath)
-		if err != nil {
-			return err
-		}
-		if isBin {
-			return nil
-		}
-
-		fReader, err := os.Open(fPath)
-		if err != nil {
-			return err
-		}
-
-		_, err = hash.Write([]byte(fPath))
-		if err != nil {
-			return err
-		}
-
-		content, err := ioutil.ReadAll(fReader)
-		if err != nil {
-			return err
-		}
-
-		_, err = hash.Write(content)
-		if err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%x", hash.Sum(nil)), nil
-}
-
-func latestDirHashCheckSum(bucket, region, service string) (string, error) {
-	buf := aws.NewWriteAtBuffer([]byte{})
-	session, err := aws_session.NewSession(&aws.Config{Region: aws.String(region)})
-	if err != nil {
-		return "", err
-	}
-
-	downloader := s3manager.NewDownloader(session)
-	_, err = downloader.Download(buf, &s3.GetObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(service),
-	})
-	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			switch awsErr.Code() {
-			case s3.ErrCodeNoSuchKey:
-				return "", nil // service was never deployed
-			}
-		}
-		return "", err
-	}
-
-	return string(buf.Bytes()), nil
+	return &Variables{Service: *service, GitHubSecrets: secrets, GitHubEnv: githubEnv}, nil
 }
 
 func main() {
@@ -128,36 +52,51 @@ func main() {
 		log.Fatal(err)
 	}
 
-	hashSum, err := dirHashCheckSum(vars.Service)
+	bu, err := internal.NewBuildUtils(vars.DeploymentRegion, vars.DeploymentBucket, vars.Service)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Print(fmt.Sprintf("service hash checksum: '%s'", hashSum))
+	checksum, err := bu.ComputeCodeChecksum()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(fmt.Sprintf("code checksum: %s", checksum))
 
-	//latestHasSum, err := latestDirHashCheckSum(vars.DeploymentBucket, vars.DeploymentRegion, vars.Service)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	liveChecksum, err := bu.GetLiveCodeChecksum()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(fmt.Sprintf("live code checksum: %s", liveChecksum))
 
-	//log.Print(fmt.Sprintf("latest service hash checksum: '%s'", latestHasSum))
-	//
-	//if hashSum == latestHasSum {
-	//	log.Print("service was not updated")
-	//	return
-	//}
-	//
-	//githubClient, err := internal.NewGitHubClient(vars.GitHubRepository, vars.PersonalAccessToken)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//log.Print("service was updated - triggering deployment...")
-	//payload := map[string]string{
-	//	"service": vars.Service,
-	//}
-	//err = githubClient.RepositoryDispatch(context.Background(), fmt.Sprintf("deploy %s", vars.Service), payload)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//log.Print("service deployment triggered!")
+	if checksum == liveChecksum {
+		log.Print("service was not updated")
+		return
+	}
+
+	zData, err := bu.GenerateDistZip()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = bu.UploadDistZip(checksum, zData)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	githubClient, err := internal.NewGitHubClient(vars.GitHubRepository, vars.PersonalAccessToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("service was updated - triggering deployment...")
+	payload := internal.BackendDeployEvent{
+		Env:      vars.Env,
+		Service:  vars.Service,
+		Checksum: checksum,
+	}
+	err = githubClient.RepositoryDispatch(context.Background(), fmt.Sprintf("[deploy] %s @ %s", vars.Service, vars.Env), payload)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("service deployment triggered!")
 }
