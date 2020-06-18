@@ -1,7 +1,8 @@
 # secrets
-export ENV="dev"
-export DEPLOYMENT_AWS_S3_BUCKET="aws-s3-bucket"
+export INFRA_AWS_REGION="aws-region-1"
+export INFRA_AWS_S3_BUCKET="aws-s3-bucket"
 export PERSONAL_ACCESS_TOKEN="****"
+
 
 # github actions
 export CI="false"

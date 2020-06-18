@@ -20,6 +20,10 @@ jobs:
   build:
     needs: test
     if: github.ref == 'refs/heads/master'
+    env:
+      INFRA_AWS_REGION: ${{secrets.INFRA_AWS_REGION}}
+      INFRA_AWS_S3_BUCKET: ${{secrets.INFRA_AWS_S3_BUCKET}}
+      PERSONAL_ACCESS_TOKEN: ${{secrets.PERSONAL_ACCESS_TOKEN}}
     defaults:
       run:
         working-directory: backend
