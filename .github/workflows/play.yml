@@ -1,0 +1,12 @@
+name: Try Events
+
+on:
+  repository_dispatch:
+    types: [play-*]
+
+jobs:
+  ###  BACKEND DEPLOY  ###
+  play-time:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello world!"
