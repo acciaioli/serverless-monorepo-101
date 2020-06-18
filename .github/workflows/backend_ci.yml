@@ -18,7 +18,7 @@ jobs:
       - run: make test -s -C demo-service
 
   build:
-    needs: test-backend
+    needs: test
     if: github.ref == 'refs/heads/master'
     defaults:
       run:
