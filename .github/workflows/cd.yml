@@ -1,12 +1,24 @@
-name: CD
+name: Continuous Deployment
 
 on: repository_dispatch
 
-jobs:
+# Alternative
+# -----------
+#on:
+#  repository_dispatch:
+#    types: [deploy demo-service, deploy demo-service2]
+# -----------
+# but for now will use the type mostly to display all the important info about the event
+# this will help navigate the github actions list
 
-###  BACKEND TESTS  ###
-  demo-service:
-    if: github.event.client_payload.service == 'demo-service'
+
+jobs:
+###  BACKEND DEPLOY  ###
+  backend:
+    if: github.event.client_payload.backend == 'true'
     runs-on: ubuntu-latest
+    env:
+      ENV: github.event.client_payload.env
+      SERVICE: github.event.client_payload.service
     steps:
       - run: echo "deploy demo-service"

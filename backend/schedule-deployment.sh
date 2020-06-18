@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOT USED ANYMORE
+
 S3_BUCKET=$1
 S3_PREFIX=$2
 

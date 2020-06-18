@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on: push
 
@@ -16,7 +16,8 @@ jobs:
           go-version: 1.14.x
       - uses: actions/checkout@v2
       # service tests
-      - run: make -s -C demo-service
+      - run: make test -s -C demo-service
+      - run: make compile -s -C demo-service
 
 ###  FRONTEND TESTS  ###
   test-frontend:
@@ -34,7 +35,7 @@ jobs:
 
 ###  BACKEND BUILDS  ###
   build-backend:
-    needs: [test-backend, test-frontend]
+    needs: test-backend
     if: github.ref == 'refs/heads/master'
     defaults:
       run:
