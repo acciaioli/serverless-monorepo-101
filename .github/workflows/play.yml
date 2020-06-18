@@ -9,4 +9,4 @@ jobs:
   play-time:
     runs-on: ubuntu-latest
     steps:
-      - run: printenv
+      - run: echo github.event.client_payload
