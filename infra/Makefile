@@ -3,7 +3,7 @@
 default: deploy
 
 MK_ENV := $(ENV)
-MK_BUCKET_NAME := $(DEPLOYMENT_BUCKET)-$(ENV)
+MK_BUCKET_NAME := $(DEPLOYMENT_BUCKET)
 
 
 deploy:
@@ -11,8 +11,7 @@ deploy:
 	@ aws cloudformation deploy \
 		--region eu-west-1 \
 		--template-file s3.yml \
-		--stack-name serverless-monorepo-101--deployments-$(ENV) \
+		--stack-name serverless-monorepo-101--deployments\
 		--parameter-overrides \
-			Env=$(MK_ENV) \
 			BucketName=$(MK_BUCKET_NAME)
 	@ echo ">> done"

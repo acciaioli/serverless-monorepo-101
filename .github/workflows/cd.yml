@@ -15,7 +15,7 @@ on: repository_dispatch
 jobs:
 ###  BACKEND DEPLOY  ###
   backend:
-    if: github.event.client_payload.backend == 'true'
+#    if: github.event.client_payload.backend == 'true'
     runs-on: ubuntu-latest
     env:
       ENV: github.event.client_payload.env

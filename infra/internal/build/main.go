@@ -8,26 +8,20 @@ import (
 
 	"github.com/pkg/errors"
 
-	"backend/internal"
+	"infra/internal"
 )
 
 const binariesDir = ".bin"
 
 type Variables struct {
-	Env     string
 	Service string
 	*internal.GitHubEnv
 	*internal.GitHubSecrets
 }
 
 func loadVariables() (*Variables, error) {
-	env := flag.String("env", "", "environment")
 	service := flag.String("service", "", "service id")
 	flag.Parse()
-
-	if *env == "" {
-		return nil, errors.New("`--env` not provided")
-	}
 
 	if *service == "" {
 		return nil, errors.New("`--service` not provided")
@@ -89,12 +83,13 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Print("service was updated - triggering deployment...")
+	env := "dev" // deploy on dev automatically
 	payload := internal.BackendDeployEvent{
-		Env:      vars.Env,
+		Env:      env,
 		Service:  vars.Service,
 		Checksum: checksum,
 	}
-	err = githubClient.RepositoryDispatch(context.Background(), fmt.Sprintf("[deploy] %s @ %s", vars.Service, vars.Env), payload)
+	err = githubClient.RepositoryDispatch(context.Background(), fmt.Sprintf("[deploy] %s @ %s", vars.Service, env), payload)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"backend/internal"
 	"log"
+
+	"infra/internal"
 )
 
 type Variables struct {
