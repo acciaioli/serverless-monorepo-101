@@ -23,8 +23,9 @@ jobs:
           go-version: 1.14.x
       - uses: actions/checkout@v2
       - run: curl -o- -L https://slss.io/install | bash
-      - run: BIN=../backend/deploy make compile-ci-deploy
-        working-directory: infra
+#      - run: BIN=../backend/deploy make compile-ci-deploy
+#        working-directory: infra
+      - run: ls ~/
       - run: ls $HOME
       - run: echo $PATH
 #      - run: ./deploy
