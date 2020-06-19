@@ -46,7 +46,7 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{Service: *service, Checksum: checksum, UserEnv: userEnv, Secrets: secrets}, nil
+	return &Variables{Env: *env, Service: *service, Checksum: checksum, UserEnv: userEnv, Secrets: secrets}, nil
 }
 
 func main() {
