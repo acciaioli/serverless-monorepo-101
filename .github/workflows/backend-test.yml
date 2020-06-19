@@ -40,5 +40,5 @@ jobs:
         working-directory: infra
       # add new services bellow
       - run: make compile -s -C demo-service
-      - run: ./hash --service=demo-service --commit-sha=${{GITHUB_SHA}}
+      - run: ./hash --service=demo-service --commit-sha=$GITHUB_SHA
 

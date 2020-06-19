@@ -1,8 +1,8 @@
-name: Play with Events
+name: Example
 
 on:
   repository_dispatch:
-    types: [play*]
+    types: [example*]
 
 jobs:
   play-time:
