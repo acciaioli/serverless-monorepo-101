@@ -3,6 +3,7 @@ name: Frontend Test
 on:
   push:
     paths:
+      - '.github/workflows/frontend**'
       - 'frontend/**'
 
 
