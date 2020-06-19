@@ -42,6 +42,6 @@ jobs:
       - run: go build -o ../backend/hash internal/hash/main.go
         working-directory: infra
       # add new services bellow
-      - run: make compile -s -C demo-service
+      # todo: hash should search by pattern?
       - run: ./hash --service=demo-service --commit-sha=$GITHUB_SHA
 

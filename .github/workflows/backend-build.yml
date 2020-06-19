@@ -26,6 +26,7 @@ jobs:
           ref: ${{github.event.client_payload.commitSHA}}
       - run: go build -o ../backend/build internal/build/main.go
         working-directory: infra
+     - run: make compile -s -C ${{github.event.client_payload.service}}
       - run: ./build
         env:
           SERVICE: ${{github.event.client_payload.service}}
