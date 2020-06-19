@@ -62,14 +62,14 @@ func main() {
 	}
 	log.Print(fmt.Sprintf("code checksum: %s", checksum))
 
-	log.Print("getting live checksum")
-	liveChecksum, err := bu.GetLastCodeChecksum()
+	log.Print("getting last checksum")
+	lastChecksum, err := bu.GetLastCodeChecksum()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(fmt.Sprintf("live code checksum: %s", liveChecksum))
+	log.Print(fmt.Sprintf("last code checksum: %s", lastChecksum))
 
-	if checksum != liveChecksum {
+	if checksum != lastChecksum {
 		log.Print("new checksum! triggering build event")
 		githubClient, err := internal.NewGitHubClient(vars.GitHubRepository, vars.PersonalAccessToken)
 		if err != nil {
