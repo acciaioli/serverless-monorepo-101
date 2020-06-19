@@ -5,8 +5,9 @@ on:
     branches:
       - master
     paths:
-      - '.github/workflows/infra**'
+      - '.force'
       - 'infra/**'
+      - '.github/workflows/infra**'
 
 jobs:
   sync:

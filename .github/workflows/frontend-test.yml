@@ -3,8 +3,9 @@ name: Frontend Test
 on:
   push:
     paths:
-      - '.github/workflows/frontend**'
+      - '.force'
       - 'frontend/**'
+      - '.github/workflows/frontend**'
 
 
 jobs:
