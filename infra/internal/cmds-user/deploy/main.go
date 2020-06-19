@@ -14,8 +14,8 @@ type Variables struct {
 	Env      string
 	Service  string
 	Checksum *string
-	*internal.GitHubEnv
-	*internal.GitHubSecrets
+	*internal.UserEnv
+	*internal.Secrets
 }
 
 func loadVariables() (*Variables, error) {
@@ -36,7 +36,7 @@ func loadVariables() (*Variables, error) {
 		checksum = nil
 	}
 
-	githubEnv, err := internal.LoadGitHubEnv()
+	userEnv, err := internal.LoadUserEnv()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{Service: *service, Checksum: checksum, GitHubSecrets: secrets, GitHubEnv: githubEnv}, nil
+	return &Variables{Service: *service, Checksum: checksum, UserEnv: userEnv, Secrets: secrets}, nil
 }
 
 func main() {
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	log.Print("triggering deploy event")
-	githubClient, err := internal.NewGitHubClient(vars.GitHubRepository, vars.PersonalAccessToken)
+	githubClient, err := internal.NewGitHubClient(vars.Repository, vars.PersonalAccessToken)
 	if err != nil {
 		log.Fatal(err)
 	}

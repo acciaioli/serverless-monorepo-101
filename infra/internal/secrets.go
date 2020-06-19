@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type GitHubSecrets struct {
+type Secrets struct {
 	// The region for everything deployment related
 	InfraRegion string `envconfig:"INFRA_AWS_REGION" required:"true"`
 	// The bucket use to store deployment related state.
@@ -15,8 +15,8 @@ type GitHubSecrets struct {
 	PersonalAccessToken string `envconfig:"PERSONAL_ACCESS_TOKEN" required:"true"`
 }
 
-func LoadSecrets() (*GitHubSecrets, error) {
-	env := GitHubSecrets{}
+func LoadSecrets() (*Secrets, error) {
+	env := Secrets{}
 	err := envconfig.Process("", &env)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to load secrets")

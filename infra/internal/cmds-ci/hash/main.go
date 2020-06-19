@@ -12,10 +12,10 @@ import (
 )
 
 type Variables struct {
-	CommitSHA string
 	Service   string
+	CommitSHA string
 	*internal.GitHubEnv
-	*internal.GitHubSecrets
+	*internal.Secrets
 }
 
 func loadVariables() (*Variables, error) {
@@ -41,7 +41,7 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{CommitSHA: *commitSHA, Service: *service, GitHubSecrets: secrets, GitHubEnv: githubEnv}, nil
+	return &Variables{CommitSHA: *commitSHA, Service: *service, Secrets: secrets, GitHubEnv: githubEnv}, nil
 }
 
 func main() {

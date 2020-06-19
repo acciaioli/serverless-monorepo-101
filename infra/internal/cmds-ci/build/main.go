@@ -10,7 +10,7 @@ import (
 
 type Variables struct {
 	*internal.GitHubEnv
-	*internal.GitHubSecrets
+	*internal.Secrets
 	*internal.BackendBuildEventPayload
 }
 
@@ -30,7 +30,7 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{GitHubSecrets: secrets, GitHubEnv: githubEnv, BackendBuildEventPayload: eventPayload}, nil
+	return &Variables{Secrets: secrets, GitHubEnv: githubEnv, BackendBuildEventPayload: eventPayload}, nil
 }
 
 func main() {

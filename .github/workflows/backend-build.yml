@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{github.event.client_payload.commitSHA}}
-      - run: go build -o ../backend/build internal/build/main.go
+      - run: BIN=../backend/build make compile-ci-build
         working-directory: infra
       - run: make compile -s -C ${{github.event.client_payload.service}}
       - run: ./build

@@ -9,5 +9,5 @@ test:
 
 compile:
 	@ echo ">> compiling binaries..."
-	@ env GOOS=linux go build -ldflags="-s -w" -o .bin/echo echo/main.go
+	@ go build -ldflags="-s -w" -o .bin/echo echo/main.go
 	@ echo ">> done"
