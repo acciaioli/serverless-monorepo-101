@@ -202,5 +202,6 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(out.String())
 	return nil
 }

@@ -61,7 +61,6 @@ func unzipFiles(src string, dest string) error {
 
 	for _, zipFile := range zipReader.File {
 		if err := func() error {
-			fmt.Println(zipFile.Name)
 			if zipFile.FileInfo().IsDir() {
 				return nil
 			}
