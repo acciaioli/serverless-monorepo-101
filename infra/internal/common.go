@@ -22,7 +22,7 @@ const (
 	binariesDir         = ".bin"
 	serverlessYML       = "serverless.yml"
 	distZip             = "dist.zip"
-	liveCodeCheckSumKey = "live-code-checksum"
+	lastCodeCheckSumKey = "last-checksum"
 )
 
 type BuildUtils struct {
@@ -40,8 +40,8 @@ func (bu *BuildUtils) binariesPattern() string {
 	return filepath.Join(bu.service, binariesDir, "*")
 }
 
-func (bu *BuildUtils) liveCodeChecksumKey() string {
-	return filepath.Join(bu.service, liveCodeCheckSumKey)
+func (bu *BuildUtils) lastCodeChecksumKey() string {
+	return filepath.Join(bu.service, lastCodeCheckSumKey)
 }
 
 func (bu *BuildUtils) checksumDistZipKey(checksum string) string {
@@ -129,8 +129,8 @@ func (bu *BuildUtils) ComputeCodeChecksum() (string, error) {
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
-func (bu *BuildUtils) GetLiveCodeChecksum() (string, error) {
-	data, err := bu.download(bu.liveCodeChecksumKey())
+func (bu *BuildUtils) GetLastCodeChecksum() (string, error) {
+	data, err := bu.download(bu.lastCodeChecksumKey())
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
 			switch awsErr.Code() {
@@ -144,8 +144,8 @@ func (bu *BuildUtils) GetLiveCodeChecksum() (string, error) {
 	return string(data), nil
 }
 
-func (bu *BuildUtils) SetLiveCodeChecksum(checksum string) error {
-	return bu.upload(bu.liveCodeChecksumKey(), []byte(checksum))
+func (bu *BuildUtils) SetLastCodeChecksum(checksum string) error {
+	return bu.upload(bu.lastCodeChecksumKey(), []byte(checksum))
 }
 
 func (bu *BuildUtils) GenerateDistZip() ([]byte, error) {

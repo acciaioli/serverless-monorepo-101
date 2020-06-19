@@ -9,7 +9,7 @@ import (
 type Variables struct {
 	*internal.GitHubEnv
 	*internal.GitHubSecrets
-	*internal.BackendDeployEvent
+	*internal.BackendDeployEventPayload
 }
 
 func loadVariables() (*Variables, error) {
@@ -23,7 +23,12 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{GitHubSecrets: secrets, GitHubEnv: githubEnv}, nil
+	eventPayload, err := internal.LoadBackendDeployEventPayloadFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Variables{GitHubSecrets: secrets, GitHubEnv: githubEnv, BackendDeployEventPayload: eventPayload}, nil
 }
 
 func main() {
@@ -43,11 +48,6 @@ func main() {
 	}
 
 	err = bu.Deploy(vars.Env, zFPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = bu.SetLiveCodeChecksum(vars.Checksum)
 	if err != nil {
 		log.Fatal(err)
 	}

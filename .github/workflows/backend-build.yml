@@ -1,0 +1,31 @@
+name: Backend Build
+
+on:
+  repository_dispatch:
+    types: [backend-build*]
+
+jobs:
+  deploy:
+    defaults:
+      run:
+        working-directory: backend
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{secrets.AWS_REGION}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      INFRA_AWS_REGION: ${{secrets.INFRA_AWS_REGION}}
+      INFRA_AWS_S3_BUCKET: ${{secrets.INFRA_AWS_S3_BUCKET}}
+      PERSONAL_ACCESS_TOKEN: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+    steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.14.x
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.client_payload.commitSHA}}
+      - run: go build -o ../backend/build internal/build/main.go
+        working-directory: infra
+      - run: ./build
+        env:
+          SERVICE: ${{github.event.client_payload.service}}

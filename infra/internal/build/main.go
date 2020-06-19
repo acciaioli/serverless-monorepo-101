@@ -2,31 +2,19 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
-
-	"github.com/pkg/errors"
 
 	"infra/internal"
 )
 
-const binariesDir = ".bin"
-
 type Variables struct {
-	Service string
 	*internal.GitHubEnv
 	*internal.GitHubSecrets
+	*internal.BackendBuildEventPayload
 }
 
 func loadVariables() (*Variables, error) {
-	service := flag.String("service", "", "service id")
-	flag.Parse()
-
-	if *service == "" {
-		return nil, errors.New("`--service` not provided")
-	}
-
 	githubEnv, err := internal.LoadGitHubEnv()
 	if err != nil {
 		return nil, err
@@ -37,7 +25,12 @@ func loadVariables() (*Variables, error) {
 		return nil, err
 	}
 
-	return &Variables{Service: *service, GitHubSecrets: secrets, GitHubEnv: githubEnv}, nil
+	eventPayload, err := internal.LoadBackendBuildEventPayloadFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Variables{GitHubSecrets: secrets, GitHubEnv: githubEnv, BackendBuildEventPayload: eventPayload}, nil
 }
 
 func main() {
@@ -57,41 +50,43 @@ func main() {
 	}
 	log.Print(fmt.Sprintf("code checksum: %s", checksum))
 
-	liveChecksum, err := bu.GetLiveCodeChecksum()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Print(fmt.Sprintf("live code checksum: %s", liveChecksum))
-
-	if checksum == liveChecksum {
-		log.Print("service was not updated")
-		return
-	}
-
 	zData, err := bu.GenerateDistZip()
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Print("dist zip generated")
 
+	log.Print("uploading dist zip")
 	err = bu.UploadDistZip(checksum, zData)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Print("dist zip uploaded")
 
+	log.Print("updating last checksum")
+	err = bu.SetLastCodeChecksum(checksum)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("last checksum updated")
+
+	log.Print("triggering deploy event")
+	env := "dev" // deploy on dev automatically
 	githubClient, err := internal.NewGitHubClient(vars.GitHubRepository, vars.PersonalAccessToken)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print("service was updated - triggering deployment...")
-	env := "dev" // deploy on dev automatically
-	payload := internal.BackendDeployEvent{
+	eventType := internal.BackendDeployEventType(vars.Service, env)
+	eventPayload := internal.BackendDeployEventPayload{
 		Env:      env,
 		Service:  vars.Service,
 		Checksum: checksum,
 	}
-	err = githubClient.RepositoryDispatch(context.Background(), fmt.Sprintf("[deploy] %s @ %s", vars.Service, env), payload)
+	err = githubClient.RepositoryDispatch(context.Background(), eventType, eventPayload)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print("service deployment triggered!")
+	log.Print("deploy event triggered")
+
+	log.Print("done")
 }
