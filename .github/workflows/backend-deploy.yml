@@ -22,10 +22,6 @@ jobs:
         with:
           go-version: 1.14.x
       - uses: actions/checkout@v2
-#      - uses: actions/setup-node@v1
-#        with:
-#          node-version: '12'
-#      - run: npm install -g serverless
       - run: |
           mkdir -p $BINARIES_DIR
           curl -L -o $BINARY_PATH https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
@@ -37,16 +33,10 @@ jobs:
           PLATFORM: linux
           ARCH: x64
           TAG: v1.73.1
-#      - run: BIN=../backend/deploy make compile-ci-deploy
-#        working-directory: infra
-      - run: ls -la ~/
-      - run: ls -la /
-      - run: ls -la
-      - run: ls -la $HOME
-      - run: echo $PATH
-      - run: serverless --verion
-#      - run: ./deploy
-#        env:
-#          ENV: ${{github.event.client_payload.env}}
-#          SERVICE: ${{github.event.client_payload.service}}
-#          CHECKSUM: ${{github.event.client_payload.checksum}}
+      - run: BIN=../backend/deploy make compile-ci-deploy
+        working-directory: infra
+      - run: ./deploy
+        env:
+          ENV: ${{github.event.client_payload.env}}
+          SERVICE: ${{github.event.client_payload.service}}
+          CHECKSUM: ${{github.event.client_payload.checksum}}
