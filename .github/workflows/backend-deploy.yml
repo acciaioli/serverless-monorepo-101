@@ -23,13 +23,10 @@ jobs:
           go-version: 1.14.x
       - uses: actions/checkout@v2
       - run: |
-          mkdir -p $BINARIES_DIR
           curl -L -o $BINARY_PATH https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
           chmod +x $BINARY_PATH
-          echo "::add-path::.serveless/bin"
         env:
-          BINARIES_DIR: .serveless/bin
-          BINARY_PATH: .serveless/bin/serverless
+          BINARY_PATH: /usr/local/bin/serverless
           PLATFORM: linux
           ARCH: x64
           TAG: v1.73.1
