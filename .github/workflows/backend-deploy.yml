@@ -29,10 +29,10 @@ jobs:
       - run: curl -o- -L https://slss.io/install | bash
 #      - run: BIN=../backend/deploy make compile-ci-deploy
 #        working-directory: infra
-      - run: ls ~/
-      - run: ls /
-      - run: ls
-      - run: ls $HOME
+      - run: ls -la ~/
+      - run: ls -la /
+      - run: ls -la
+      - run: ls -la $HOME
       - run: echo $PATH
       - run: find / -name serverless
       - run: serverless --verion
