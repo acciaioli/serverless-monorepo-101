@@ -21,18 +21,21 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: 1.14.x
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-      - run: npm install -g serverless
-      - run: serverless --verion
+#      - uses: actions/setup-node@v1
+#        with:
+#          node-version: '12'
+#      - run: npm install -g serverless
+      - run: curl -o- -L https://slss.io/install | bash
 #      - uses: actions/checkout@v2
-#      - run: curl -o- -L https://slss.io/install | bash
 #      - run: BIN=../backend/deploy make compile-ci-deploy
 #        working-directory: infra
       - run: ls ~/
+      - run: ls /
+      - run: ls
       - run: ls $HOME
       - run: echo $PATH
+      - run: find / -name serverless
+      - run: serverless --verion
 #      - run: ./deploy
 #        env:
 #          ENV: ${{github.event.client_payload.env}}
