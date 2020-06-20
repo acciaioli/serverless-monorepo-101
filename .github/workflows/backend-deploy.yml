@@ -33,6 +33,7 @@ jobs:
           PLATFORM: linux
           ARCH: x64
           TAG: v1.73.1
+      - run: echo $PATH
       - run: BIN=../backend/deploy make compile-ci-deploy
         working-directory: infra
       - run: ./deploy
