@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -193,7 +194,7 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 		return err
 	}
 
-	cmd := exec.Command("~/.serverless/bin/serverless", "deploy", "--stage", env)
+	cmd := exec.Command("serverless", "deploy", "--stage", env)
 	cmd.Dir = distPath
 	out := bytes.Buffer{}
 	cmd.Stdout = &out
@@ -201,6 +202,6 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(out.String())
+	log.Print(out.String())
 	return nil
 }
