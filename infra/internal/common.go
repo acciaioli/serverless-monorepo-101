@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -204,11 +203,11 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 	if err != nil {
 		return err
 	}
-	log.Print("----out----")
-	log.Print(stdout.String())
-	log.Print("--------")
-	log.Print("----err----")
-	log.Print(stdout.String())
-	log.Print("--------")
+	fmt.Println("----out----")
+	fmt.Println(stdout.String())
+	fmt.Println("--------")
+	fmt.Println("----err----")
+	fmt.Println(stdout.String())
+	fmt.Println("--------")
 	return nil
 }
