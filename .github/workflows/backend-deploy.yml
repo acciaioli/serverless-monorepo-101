@@ -28,11 +28,12 @@ jobs:
 #      - run: npm install -g serverless
       - run: |
           mkdir -p $BINARIES_DIR
-          curl -L -o $BINARIES_DIR/serverless https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
+          curl -L -o $BINARY_PATH https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
           chmod +x $BINARY_PATH
           echo "::add-path::.serveless/bin"
         env:
           BINARIES_DIR: .serveless/bin
+          BINARY_PATH: .serveless/bin/serverless
           PLATFORM: linux
           ARCH: x64
           TAG: v1.73.1
