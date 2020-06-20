@@ -27,7 +27,7 @@ jobs:
 #          node-version: '12'
 #      - run: npm install -g serverless
       - run: |
-          curl -L -o $BINARY_PATH https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
+          curl -L -o --create-dirs $BINARY_PATH https://github.com/serverless/serverless/releases/download/$TAG/serverless-$PLATFORM-$ARCH
           chmod +x $BINARY_PATH
           echo "::add-path::.serveless/bin"
         env:
