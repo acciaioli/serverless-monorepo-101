@@ -192,8 +192,10 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 	if err != nil {
 		return err
 	}
-
 	cmd := exec.Command("serverless", "deploy", "--stage", env)
+	fmt.Println("----cmd----")
+	fmt.Println(cmd.String())
+	fmt.Println("--------")
 	cmd.Dir = distPath
 	stdout := bytes.Buffer{}
 	stderr := bytes.Buffer{}
