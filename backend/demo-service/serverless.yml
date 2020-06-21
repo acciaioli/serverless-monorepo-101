@@ -21,10 +21,10 @@ provider:
   timeout: 6
   logRetentionInDays: 1
   disableLogs: false
-#  deploymentBucket:
-#    maxPreviousDeploymentArtifacts: 5
-#    blockPublicAccess: true
-#  deploymentPrefix: ${self:service.name}--${self:provider.stage}
+  deploymentBucket:
+    name: ${env:INFRA_AWS_S3_BUCKET}
+    maxPreviousDeploymentArtifacts: 4
+  deploymentPrefix: serverless-deployments--${self:service.name}--${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:

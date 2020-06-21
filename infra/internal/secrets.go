@@ -6,8 +6,6 @@ import (
 )
 
 type Secrets struct {
-	// The region for everything deployment related
-	InfraRegion string `envconfig:"INFRA_AWS_REGION" required:"true"`
 	// The bucket use to store deployment related state.
 	InfraBucket string `envconfig:"INFRA_AWS_S3_BUCKET" required:"true"`
 	// Github Personal Access Token

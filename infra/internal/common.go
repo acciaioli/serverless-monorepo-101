@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,14 +27,13 @@ const (
 )
 
 type BuildUtils struct {
-	region string
 	bucket string
 
 	service string
 }
 
-func NewBuildUtils(region, bucket, service string) (*BuildUtils, error) {
-	return &BuildUtils{region: region, bucket: bucket, service: service}, nil
+func NewBuildUtils(bucket, service string) (*BuildUtils, error) {
+	return &BuildUtils{bucket: bucket, service: service}, nil
 }
 
 func (bu *BuildUtils) binariesPattern() string {
@@ -49,7 +49,7 @@ func (bu *BuildUtils) checksumDistZipKey(checksum string) string {
 }
 
 func (bu *BuildUtils) download(key string) ([]byte, error) {
-	session, err := aws_session.NewSession(&aws.Config{Region: aws.String(bu.region)})
+	session, err := aws_session.NewSession()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (bu *BuildUtils) download(key string) ([]byte, error) {
 }
 
 func (bu *BuildUtils) upload(key string, data []byte) error {
-	session, err := aws_session.NewSession(&aws.Config{Region: aws.String(bu.region)})
+	session, err := aws_session.NewSession()
 	if err != nil {
 		return err
 	}
@@ -193,23 +193,17 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 		return err
 	}
 	cmd := exec.Command("serverless", "deploy", "--stage", env)
-	fmt.Println("----cmd----")
-	fmt.Println(cmd.String())
-	fmt.Println("--------")
+	log.Print(fmt.Sprintf("running command: %s", cmd.String()))
 	cmd.Dir = distPath
 	stdout := bytes.Buffer{}
 	stderr := bytes.Buffer{}
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err = cmd.Run()
+	log.Print("command output:")
+	log.Print(stdout.String())
 	if err != nil {
 		return err
 	}
-	fmt.Println("----out----")
-	fmt.Println(stdout.String())
-	fmt.Println("--------")
-	fmt.Println("----err----")
-	fmt.Println(stdout.String())
-	fmt.Println("--------")
 	return nil
 }

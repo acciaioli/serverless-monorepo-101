@@ -21,17 +21,9 @@ jobs:
         with:
           go-version: 1.14.x
       - run: make test-compile
-
-#        with:
-#          go-version: 1.14.x
-#      - uses: actions/checkout@v2
-#      - uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ secrets.AWS_REGION }}
-#      - uses: aws-actions/aws-cloudformation-github-deploy@v1
-#        with:
-#          name: MyStack
-#          template: myStack.yaml
-#          parameter-overrides: "MyParam1=myValue,MyParam2=${{ secrets.MY_SECRET_VALUE }}"
+      - run: make deploy
+        env:
+          AWS_REGION: ${{secrets.AWS_REGION}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          INFRA_AWS_S3_BUCKET: ${{secrets.INFRA_AWS_S3_BUCKET}}

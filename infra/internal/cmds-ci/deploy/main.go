@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bu, err := internal.NewBuildUtils(vars.InfraRegion, vars.InfraBucket, vars.Service)
+	bu, err := internal.NewBuildUtils(vars.InfraBucket, vars.Service)
 	if err != nil {
 		log.Fatal(err)
 	}
