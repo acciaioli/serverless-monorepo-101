@@ -16,5 +16,4 @@
 # vendor/
 
 .bin/
-.dist/
 .serverless/

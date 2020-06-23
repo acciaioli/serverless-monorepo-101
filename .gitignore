@@ -1,2 +1,5 @@
 /.idea
 env.sh
+
+.bin/
+dist/

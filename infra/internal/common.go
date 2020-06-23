@@ -192,6 +192,23 @@ func (bu *BuildUtils) Deploy(env string, distZipPath string) error {
 	if err != nil {
 		return err
 	}
+
+	fPaths, err := filepath.Glob("dist/.bin/*")
+	if err != nil {
+		return err
+	}
+	if len(fPaths) < 1 {
+		return errors.New("no binaries files found")
+	}
+
+	// make bin files executable again....
+	for _, fPath := range fPaths {
+		err := os.Chmod(fPath, 0775)
+		if err != nil {
+			return err
+		}
+	}
+
 	cmd := exec.Command("serverless", "deploy", "--stage", env)
 	log.Print(fmt.Sprintf("running command: %s", cmd.String()))
 	cmd.Dir = distPath
