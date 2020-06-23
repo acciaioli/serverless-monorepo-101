@@ -18,9 +18,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		if bestFruit == common.BestFruit {
 			return events.APIGatewayProxyResponse{Headers: request.Headers, Body: `{"best-fruit": "how did you know?"}`, StatusCode: 200}, nil
 		}
-		else {
-			return events.APIGatewayProxyResponse{Headers: request.Headers, Body: fmt.Sprintf(`{"best-fruit": "not %s"}`, bestFruit), StatusCode: 200}, nil
-		}
+		return events.APIGatewayProxyResponse{Headers: request.Headers, Body: fmt.Sprintf(`{"best-fruit": "not %s"}`, bestFruit), StatusCode: 200}, nil
 	}
 
 	b, err := json.Marshal(request.QueryStringParameters)
