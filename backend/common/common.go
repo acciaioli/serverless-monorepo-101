@@ -1,4 +1,3 @@
 package common
 
-
-const BestFruit = "raspberry"
+const BestFruit = "orange"
