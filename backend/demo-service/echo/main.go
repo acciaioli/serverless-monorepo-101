@@ -1,7 +1,6 @@
 package main
 
 import (
-	"backend/common"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,7 +14,7 @@ import (
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	bestFruit, ok := request.QueryStringParameters["best-fruit"]
 	if ok {
-		if bestFruit == common.BestFruit {
+		if bestFruit == "orange" {
 			return events.APIGatewayProxyResponse{Headers: request.Headers, Body: `{"best-fruit": "how did you know?"}`, StatusCode: 200}, nil
 		}
 		return events.APIGatewayProxyResponse{Headers: request.Headers, Body: fmt.Sprintf(`{"best-fruit": "not %s"}`, bestFruit), StatusCode: 200}, nil
