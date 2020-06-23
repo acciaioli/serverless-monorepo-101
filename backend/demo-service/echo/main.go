@@ -4,6 +4,7 @@ import (
 	"backend/common"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -26,6 +27,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 400}, nil
 	}
+
+	log.Print("this is a simple log")
+	log.Print(`{"message": "this is a json log"`)
 
 	return events.APIGatewayProxyResponse{Headers: request.Headers, Body: string(b), StatusCode: 200}, nil
 }
