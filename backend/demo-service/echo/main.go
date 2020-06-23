@@ -18,7 +18,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		if bestFruit == common.BestFruit {
 			return events.APIGatewayProxyResponse{Headers: request.Headers, Body: `{"best-fruit": "how did you know?"}`, StatusCode: 200}, nil
 		}
-		if bestFruit == common.BestFruit {
+		else {
 			return events.APIGatewayProxyResponse{Headers: request.Headers, Body: fmt.Sprintf(`{"best-fruit": "not %s"}`, bestFruit), StatusCode: 200}, nil
 		}
 	}
@@ -28,8 +28,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{StatusCode: 400}, nil
 	}
 
-	log.Print("this is a simple log")
-	log.Print(`{"message": "this is a json log"`)
+	log.Print("this log show on humio")
 
 	return events.APIGatewayProxyResponse{Headers: request.Headers, Body: string(b), StatusCode: 200}, nil
 }
